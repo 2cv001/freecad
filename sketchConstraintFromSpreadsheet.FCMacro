@@ -22,7 +22,7 @@
 # ========================================================================
 __author__ = "2cv001"
 __title__   = "Macro Sketch Constraint From Spreadsheet"
-__date__    = "2023/01/04"    #YYYY/MM/DD
+__date__    = "2023/01/02"    #YYYY/MM/DD
 __version__ = __date__
 __icon__    = "https://wiki.freecad.org/Images/1/15/Macro_Sketch_Constraint_From_Spreadsheet.svg"
 __Wiki__    = "https://wiki.freecad.org/Macro_sketchConstraintFromSpreadsheet"
@@ -170,7 +170,7 @@ class Dialog(QtGui.QDialog):
         
         layout_checkboxTextDocument = QtGui.QHBoxLayout()
         layout_checkboxTextDocument.addSpacing(20)
-        if documentState!= 'no' :
+        if textdocumentState!= 'no' :
             layout_checkboxTextDocument.addWidget(self.checkboxTextDocument)           
             layout_checkboxTextDocument.addWidget(self.textboxTextdocumentName)         
         
@@ -223,7 +223,6 @@ class Dialog(QtGui.QDialog):
         self.checkbox4Sketch.stateChanged.connect(self.update_sketch_checkbox)
 
         layout = QtGui.QVBoxLayout()
-        
         if text!='' :
             layout.addWidget(self.text_widget)
 
@@ -1106,7 +1105,6 @@ def main():
                                             "No active spreadsheet with selected cells.")
          return True    
         
- 
     
     try :
         mySketch = ActiveSketch
@@ -1138,24 +1136,22 @@ def main():
     # retrieve the selected cell
     ci = lambda :Gui.getMainWindow().centralWidget().activeSubWindow().widget().findChild(QtGui.QTableView).currentIndex()
     cellCode = '{}{}{}'.format(chr(ci().column()//28 + 64) if ci().column()//26 > 0 else '', chr(ci().column()%26 + 65), ci().row() + 1)
+
+ # ajouter un controle
+ #si cellCode est bien à droite des cellules avec alias ou pas
+
     try:
        cellContents = float(mySpreadSheet.get(cellCode))
     except:
         QtWidgets.QMessageBox.information(None, "Warning",
                  "Click on a cell with a numeric value before runing the macro")
         return
-        
-  
-    column = get_column(cellCode)
-    if column!=get_next_column(get_column(getIniCellForAlias())) and getIniCheckboxStateForAlias():
-        get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a wrong cell. Put your value in column " +
-                get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
-                 "\n\n Or change value below. ")
-        return
+       
     
-    if getIniCheckboxStateForAlias() :
-        setAlias()
-    cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
+    column = get_column(cellCode)
+   
+
+
 
 
     # Part sketch
@@ -1220,12 +1216,11 @@ def main():
         else :
             buttonHavingFocus = 'DistanceY'
             
-        # ------------------------------------------------    
+        # ------------------------------------------------    
         # ask the user what kind of constraint he wants
         #------------------------------------------------
         form = getConstraintType(buttonHavingFocus)
         form.exec_()
-        # setAlias()
                
         # conflict : is the checkboxSheced?
         sheckBoxConstraintConflicState = form.getCheckBoxState()
@@ -1240,16 +1235,32 @@ def main():
                 isInternalObject1, isInternalObject2 = isInternalObject2, isInternalObject1
                 x1, x2, y1, y2 = x2, x1, y2, y1
 
-    
-    # if getIniCheckboxStateForAlias() :
-        # setAlias()
-    
+
+
+    if column!=get_next_column(get_column(getIniCellForAlias())) and getIniCheckboxStateForAlias():
+        get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a cell without alias . Put your value in column " +
+                get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
+                 "\n\n Or change value below. ")
+        return
+        
+        
+    cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
+    if cellAlias == None and getIniCheckboxStateForAlias():    
+        get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a wrong cell. Put your value in column " +
+                get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
+                 "\n\n Or change value below. ")
+        return
+
+    if getIniCheckboxStateForAlias() :
+        setAlias()
+
     
     
     
     # create constraint
     #=================================
     # get value for constraint 
+    cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
     if cellAlias == None :
         cellExpression = mySpreadSheetName + '.' + cellCode
     else :
