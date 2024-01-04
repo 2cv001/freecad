@@ -17,7 +17,7 @@
 # ==    like 'Spreadsheet.alias'.                                       ==
 # ==    if not, just something like 'Spreadsheet.C2'                    ==
 # == You can select lines, points line, points, circle...               ==
-# == You can't select external objetcs  (next version will be able to   ==
+# == You can't select external objetcs                                  ==
 # ========================================================================
 # ========================================================================
 __author__ = "2cv001"
