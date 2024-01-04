@@ -118,7 +118,8 @@ def save_settings_Alias(cell,checked):
 class Dialog(QtGui.QDialog):            
     def __init__(self, documentState, spreadsheetState, textdocumentState,  bodyState, sketchState, text='', parent=None):
         super(Dialog, self).__init__(parent)
-        toolLip="If checked, alias will automatically be created during each macro execution. \nAlias will be created for the right cell from the text in this cell."
+        toolLip=("If checked, alias will automatically be created during each macro execution. "+
+                "Alias will be created at the right of cells with text if cell with text is this one or cells and under  :")
         self.documentState = documentState
         self.textdocumentState = textdocumentState        
         self.spreadsheetState = spreadsheetState
@@ -132,7 +133,7 @@ class Dialog(QtGui.QDialog):
         self.checkboxSpreadsheet = self.create_checkbox("Spreadsheets", spreadsheetState)
         self.checkbox3Body = self.create_checkbox("Body", bodyState)
         self.checkbox4Sketch = self.create_checkbox("Sketch", sketchState)    
-        self.checkboxAlias = QtGui.QCheckBox("Alias to the right of the column:") 
+        self.checkboxAlias = QtGui.QCheckBox("Alias to column at the right of the cell and under :") 
         self.checkboxAlias.setToolTip(toolLip)    
 
         
@@ -1238,23 +1239,24 @@ def main():
 
 
     if column!=get_next_column(get_column(getIniCellForAlias())) and getIniCheckboxStateForAlias():
-        get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a cell without alias . Put your value in column " +
-                get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
-                 "\n\n Or change value below. ")
-        return
-        
-        
-    cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
-    if cellAlias == None and getIniCheckboxStateForAlias():    
         get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a wrong cell. Put your value in column " +
                 get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
                  "\n\n Or change value below. ")
         return
+        
+        
+
 
     if getIniCheckboxStateForAlias() :
         setAlias()
 
-    
+    cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
+    print('cellAlias',cellAlias)
+    if cellAlias == None and getIniCheckboxStateForAlias():    
+        get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a wcell without alias. Put your value in column " +
+                get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
+                 "\n\n Or change value below. ")
+        return
     
     
     # create constraint
