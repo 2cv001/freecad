@@ -17,7 +17,7 @@
 # ==    like 'Spreadsheet.alias'.                                       ==
 # ==    if not, just something like 'Spreadsheet.C2'                    ==
 # == You can select lines, points line, points, circle...               ==
-# == You can't select external objetcs  (next version will be able to   ==
+# == You can select external objetcs                                    ==
 # ========================================================================
 # ========================================================================
 __author__ = "2cv001"
@@ -1153,7 +1153,8 @@ def main():
                  "\n\n Or change value below. ")
         return
     
-   
+    if getIniCheckboxStateForAlias() :
+        setAlias()
     cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
 
 
@@ -1240,8 +1241,8 @@ def main():
                 x1, x2, y1, y2 = x2, x1, y2, y1
 
     
-    if getIniCheckboxStateForAlias() :
-        setAlias()
+    # if getIniCheckboxStateForAlias() :
+        # setAlias()
     
     
     
