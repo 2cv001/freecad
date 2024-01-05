@@ -119,7 +119,7 @@ class Dialog(QtGui.QDialog):
     def __init__(self, documentState, spreadsheetState, textdocumentState,  bodyState, sketchState, text='', parent=None):
         super(Dialog, self).__init__(parent)
         toolLip=("If checked, alias will automatically be created during each macro execution. "+
-                "Alias will be created at the right of cells with text if cell with text is this one or cells and under  :")
+                "Alias will be created at the right of cells with text. Cells with text is this one or cells and under  :")
         self.documentState = documentState
         self.textdocumentState = textdocumentState        
         self.spreadsheetState = spreadsheetState
@@ -269,11 +269,10 @@ class Dialog(QtGui.QDialog):
 
         self.setLayout(layout)
         self.update_document_checkbox()
-        self.update_textdocument_checkbox()        
-        
-        self.update_spreadsheet_checkbox()
-        self.update_sketch_checkbox()
+        self.update_spreadsheet_checkbox()        
+        self.update_textdocument_checkbox()   
         self.update_body_checkbox()
+        self.update_sketch_checkbox()
         self.update_radiobuttons()
         
 
@@ -304,21 +303,24 @@ class Dialog(QtGui.QDialog):
         if self.textdocumentState == 'exist' :
             self.checkboxTextDocument.setEnabled(False)  
             self.checkboxTextDocument.setChecked(True)
-        self.textboxTextdocumentName.setEnabled(self.checkboxTextDocument.isChecked())
+        self.textboxTextdocumentName.setEnabled(self.checkboxTextDocument.isChecked()
+        and self.checkboxTextDocument.isEnabled())
         
             
     def update_spreadsheet_checkbox(self):
         if self.spreadsheetState == 'exist' :
             self.checkboxSpreadsheet.setEnabled(False)  
             self.checkboxSpreadsheet.setChecked(True) 
-        self.textboxSpreadsheetName.setEnabled(self.checkboxSpreadsheet.isChecked())
+        self.textboxSpreadsheetName.setEnabled(self.checkboxSpreadsheet.isChecked() 
+                and self.checkboxSpreadsheet.isEnabled())
         
     def update_body_checkbox(self):
         if self.bodyState == 'exist' :
             self.checkbox3Body.setEnabled(False)  
             self.checkbox3Body.setChecked(True)  
  
-        self.textboxBodyName.setEnabled(self.checkbox3Body.isChecked()) 
+        self.textboxBodyName.setEnabled(self.checkbox3Body.isChecked()
+                and self.checkbox3Body.isEnabled()) 
         self.checkbox4Sketch.setEnabled(self.checkbox3Body.isChecked())  
         self.checkbox4Sketch.setChecked(self.checkbox3Body.isChecked())      
         self.update_sketch_checkbox () 
@@ -328,7 +330,8 @@ class Dialog(QtGui.QDialog):
         if self.sketchState =='exist' :
             self.checkbox4Sketch.setEnabled(False)   
             self.checkbox4Sketch.setChecked(True) 
-        self.textboxSketchName.setEnabled(self.checkbox4Sketch.isChecked())             
+        self.textboxSketchName.setEnabled(self.checkbox4Sketch.isChecked()
+                and self.checkbox4Sketch.isEnabled())             
         self.update_radiobuttons()          
 
     def update_radiobuttons(self):
@@ -622,7 +625,9 @@ def setAlias():
         mySpreadSheet = Gui.ActiveDocument.ActiveView.getSheet()
     except :
         QtWidgets.QMessageBox.warning(Gui.getMainWindow(), "Warning", 
-                                            "No active spreadsheet with selected cells.")
+                                            "No active spreadsheet with selected cells."+
+                                            "\nSelect objects in sketch, \n"+
+                                            "and then select a cell in spreadsheet")
         return True
       
     aw = Gui.getMainWindow().centralWidget().activeSubWindow() # Store the active window      
@@ -1103,17 +1108,33 @@ def main():
         mySpreadSheet = Gui.ActiveDocument.ActiveView.getSheet()
     except :
          QtWidgets.QMessageBox.warning(Gui.getMainWindow(), "Warning", 
-                                            "No active spreadsheet with selected cells.")
+                                            "No active spreadsheet with selected cells."+
+                                            "\nSelect objects in sketch, \n"+
+                                            "and then select a cell in spreadsheet")
          return True    
-        
-    
+  
+
+####If we select a Pad not in edition mode and a cell
+    myPad=None
+    try :
+        sels = Gui.Selection.getSelectionEx()
+        if sels[0].Object.TypeId=='PartDesign::Pad' :
+            myPad=sels[0].Object
+            typeIdGeometry1='PartDesign::Pad'
+            
+    except :
+        pass
+
+  
+
     try :
         mySketch = ActiveSketch
     except :
-        QtWidgets.QMessageBox.information(None, "Warning", 
-            "Select object (point, line...) in the sketch in edition mode")
-        # activateSketchEditingWindow()
-        return    
+        if myPad==None :
+            QtWidgets.QMessageBox.information(None, "Warning", 
+                "Select object (point, line...) in the sketch in edition mode")
+            # activateSketchEditingWindow()
+            return    
     
     
     # Part SpreadSheet
@@ -1159,7 +1180,7 @@ def main():
     #----------------------------
     sels = Gui.Selection.getSelectionEx()
 
-    if len(sels) == 0 or len(sels[0].SubElementNames) == 0 :
+    if (len(sels) == 0 or len(sels[0].SubElementNames) == 0) and myPad==None : 
         QtWidgets.QMessageBox.information(None, "Warning", "Anything is select.\n" + 
               "Select 1 line, 2 points or a constraint in a sketch before selecting a cell in the spreadsheet")
         activateSketchEditingWindow()
@@ -1251,7 +1272,6 @@ def main():
         setAlias()
 
     cellAlias = App.ActiveDocument.getObject(mySpreadSheetName).getAlias(cellCode)
-    print('cellAlias',cellAlias)
     if cellAlias == None and getIniCheckboxStateForAlias():    
         get_user_input("no", "no", "no", "no", "no","In spreadsheet, a value have been selected in a wcell without alias. Put your value in column " +
                 get_column(nextCell(getIniCellForAlias())) + " in cell " + nextCell(getIniCellForAlias()) + " or under. " +
@@ -1267,6 +1287,17 @@ def main():
         cellExpression = mySpreadSheetName + '.' + cellCode
     else :
         cellExpression = mySpreadSheetName + '.' + cellAlias
+        
+        
+#######################################################################
+########## TODO if myPad!=None  myPad.Length = cellExpression      
+        
+    if myPad!=None :
+        #myPad.setExpression('Length', u'SpreadSheetDatas12.B5')  
+        myPad.setExpression('Length', cellExpression)         
+        return
+
+
         
     # create constraint for internal or external circle
     if (len(sels[0].SubElementNames) == 1 and typeIdGeometry1 in['Part::GeomCircle', 'Part::GeomArcOfCircle'] ) :
