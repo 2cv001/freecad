@@ -1120,12 +1120,10 @@ def main():
         sels = Gui.Selection.getSelectionEx()
         if sels[0].Object.TypeId=='PartDesign::Pad' :
             myPad=sels[0].Object
-            typeIdGeometry1='PartDesign::Pad'
-            
+            typeIdGeometry1='PartDesign::Pad'            
     except :
         pass
-
-  
+        
 
     try :
         mySketch = ActiveSketch
@@ -1172,8 +1170,6 @@ def main():
     
     column = get_column(cellCode)
    
-
-
 
 
     # Part sketch
@@ -1288,9 +1284,7 @@ def main():
     else :
         cellExpression = mySpreadSheetName + '.' + cellAlias
         
-        
-#######################################################################
-########## TODO if myPad!=None  myPad.Length = cellExpression      
+            
         
     if myPad!=None :
         #myPad.setExpression('Length', u'SpreadSheetDatas12.B5')  
