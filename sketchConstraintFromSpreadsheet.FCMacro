@@ -22,7 +22,7 @@
 # ========================================================================
 __author__ = "2cv001"
 __title__   = "Macro Sketch Constraint From Spreadsheet"
-__date__    = "2023/01/07"    #YYYY/MM/DD
+__date__    = "2023/01/06"    #YYYY/MM/DD
 __version__ = __date__
 __icon__    = "https://wiki.freecad.org/images/d/dc/Macro_Sketch_Constraint_From_Spreadsheet.svg"
 __Wiki__    = "https://wiki.freecad.org/Macro_sketchConstraintFromSpreadsheet"
@@ -463,9 +463,14 @@ def addTheObjects():
         if firstObject('Spreadsheet::Sheet')==None and user_input['checkboxSpreadsheet'] :
             firstSpreadsheet = App.activeDocument().addObject('Spreadsheet::Sheet', user_input['textboxSpreadsheetName'])
             # si la checkbox est cochée alors on ajoute les textes titres dans les cellules
+
+            firstSpreadsheet.mergeCells('A1:B1')
+            firstSpreadsheet.setAlignment('A1:B1', 'center|vcenter|vimplied')
+            firstSpreadsheet.setStyle('A1:B1', 'bold')
+            firstSpreadsheet.set('A1', "TITLE")
             if getIniCellForAlias() :
                 cellAbove, cellRight = get_adjacent_cells(getIniCellForAlias())
-                if cellAbove != "" :
+                if cellAbove != "" and cellAbove not in['A1','B1']:
                     firstSpreadsheet.set(cellAbove, "Texts for alias")
                     firstSpreadsheet.set(cellRight, "Values")
                     firstSpreadsheet.setStyle(cellAbove, 'bold')
