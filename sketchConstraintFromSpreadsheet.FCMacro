@@ -540,7 +540,7 @@ nouveauCaract = ''    #Put for example "_" to have the separators replaced by "_
 majuscule = True      #set to True if you want  "Diametre du cercle" to be "DiametreDuCercle"
 changeTexteCellule = False  # the text will only be changed if changeCellText is True. 
                           # This does not change anything for the allias itself
-premierCaractereEnMinuscule = True # Force the first character to be in lower case
+premierCaractereEnMinuscule = False # Force the first character to be in lower case
 
 # list of characters to be replaced by an equivalent. for example an @ will be replaced by 'a'
 # if you add characters, please send me a private message. Il will eventually add it in my code.
