@@ -22,7 +22,7 @@
 # ========================================================================
 __author__ = "2cv001"
 __title__   = "Macro Sketch Constraint From Spreadsheet"
-__date__    = "2023/01/06"    #YYYY/MM/DD
+__date__    = "2023/01/07"    #YYYY/MM/DD
 __version__ = __date__
 __icon__    = "https://wiki.freecad.org/images/d/dc/Macro_Sketch_Constraint_From_Spreadsheet.svg"
 __Wiki__    = "https://wiki.freecad.org/Macro_sketchConstraintFromSpreadsheet"
@@ -133,7 +133,7 @@ class Dialog(QtGui.QDialog):
         self.checkboxSpreadsheet = self.create_checkbox("Spreadsheets", spreadsheetState)
         self.checkbox3Body = self.create_checkbox("Body", bodyState)
         self.checkbox4Sketch = self.create_checkbox("Sketch", sketchState)    
-        self.checkboxAlias = QtGui.QCheckBox("Text for Alias in this cell and under  :") 
+        self.checkboxAlias = QtGui.QCheckBox("Starting cell for alias texts  :") 
         self.checkboxAlias.setToolTip(toolLip)    
 
         
@@ -466,8 +466,8 @@ def addTheObjects():
             if getIniCellForAlias() :
                 cellAbove, cellRight = get_adjacent_cells(getIniCellForAlias())
                 if cellAbove != "" :
-                    firstSpreadsheet.set(cellAbove, "Cells with alias names")
-                    firstSpreadsheet.set(cellRight, "Cells with alias for values")
+                    firstSpreadsheet.set(cellAbove, "Texts for alias")
+                    firstSpreadsheet.set(cellRight, "Values")
                     firstSpreadsheet.setStyle(cellAbove, 'bold')
                     firstSpreadsheet.setStyle(cellRight, 'bold') 
                     firstSpreadsheet.recompute()
