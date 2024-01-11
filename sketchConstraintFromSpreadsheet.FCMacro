@@ -1168,11 +1168,14 @@ def main():
          return True    
   
 
-####If we select a Pad not in edition mode and a cell
+####If we select a Pad, Pocket... not in edition mode and a cell
     myPadOrPocket=None
     try :
         sels = Gui.Selection.getSelectionEx()
-        if sels[0].Object.TypeId in ['PartDesign::Pad','PartDesign::Pocket'] :        
+        # print('sels[0].Object.TypeId',sels[0].Object.TypeId)
+        if sels[0].Object.TypeId in ['PartDesign::Pad','PartDesign::Pocket',
+                'Part::Part2DObjectPython','PartDesign::Thickness', # ShapeString, Thickness
+                'PartDesign::Chamfer', 'PartDesign::Fillet'] : 
             myPadOrPocket=sels[0].Object
             typeIdGeometry1=myPadad.TypeId                 
     except :
@@ -1215,7 +1218,8 @@ def main():
  #si cellCode est bien à droite des cellules avec alias ou pas
 
     try:
-       cellContents = float(mySpreadSheet.get(cellCode))
+        if sels[0].Object.TypeId not in ['Part::Part2DObjectPython'] :  # ShapeString
+            cellContents = float(mySpreadSheet.get(cellCode))
     except:
         QtWidgets.QMessageBox.information(None, "Warning",
                  "Click on a cell with a numeric value before runing the macro")
@@ -1341,8 +1345,17 @@ def main():
             
         
     if myPadOrPocket!=None :
-        #myPadOrPocket.setExpression('Length', u'SpreadSheetDatas12.B5')  
-        myPadOrPocket.setExpression('Length', cellExpression)         
+        #myPadOrPocket.setExpression('Length', u'SpreadSheetDatas12.B5') 
+        if myPadOrPocket.TypeId == 'Part::Part2DObjectPython' :
+            myPadOrPocket.setExpression('String', str(cellExpression))
+        elif myPadOrPocket.TypeId == 'PartDesign::Thickness' : 
+            myPadOrPocket.setExpression('Value', cellExpression) 
+        elif myPadOrPocket.TypeId == "PartDesign::Chamfer" :
+             myPadOrPocket.setExpression('Size', cellExpression) 
+        elif myPadOrPocket.TypeId == "PartDesign::Fillet" :
+             myPadOrPocket.setExpression('Radius', cellExpression)               
+        else :
+            myPadOrPocket.setExpression('Length', cellExpression)         
         return
 
 
