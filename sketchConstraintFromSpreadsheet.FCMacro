@@ -22,7 +22,7 @@
 # ========================================================================
 __author__ = "2cv001"
 __title__   = "Macro Sketch Constraint From Spreadsheet"
-__date__    = "2024/01/07"    #YYYY/MM/DD
+__date__    = "2024/01/11"    #YYYY/MM/DD
 __version__ = __date__
 __icon__    = "https://wiki.freecad.org/images/d/dc/Macro_Sketch_Constraint_From_Spreadsheet.svg"
 __Wiki__    = "https://wiki.freecad.org/Macro_sketchConstraintFromSpreadsheet"
@@ -1410,5 +1410,8 @@ def main():
         
 if __name__ == '__main__':
     main()
+
+
+
 
 
